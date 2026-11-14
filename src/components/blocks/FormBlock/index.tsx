@@ -9,16 +9,29 @@ export default function FormBlock(props) {
     const formRef = React.createRef<HTMLFormElement>();
     const { fields = [], elementId, submitButton, className, styles = {}, 'data-sb-field-path': fieldPath } = props;
 
+    const [status, setStatus] = React.useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
     if (fields.length === 0) {
         return null;
     }
 
-    function handleSubmit(event) {
+    // Netlify Forms: posts to the static form definition in public/__forms.html
+    async function handleSubmit(event) {
         event.preventDefault();
-
-        const data = new FormData(formRef.current);
-        const value = Object.fromEntries(data.entries());
-        alert(`Form data: ${JSON.stringify(value)}`);
+        setStatus('sending');
+        try {
+            const data = new FormData(formRef.current);
+            const res = await fetch('/__forms.html', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(data as any).toString()
+            });
+            if (!res.ok) throw new Error(String(res.status));
+            formRef.current?.reset();
+            setStatus('sent');
+        } catch {
+            setStatus('error');
+        }
     }
 
     return (
@@ -67,6 +80,11 @@ export default function FormBlock(props) {
                     <SubmitButtonFormControl {...submitButton} {...(fieldPath && { 'data-sb-field-path': '.submitButton' })} />
                 </div>
             )}
+            <p className="mt-4" role="status" aria-live="polite">
+                {status === 'sending' && '送信しています…'}
+                {status === 'sent' && '送信しました。2営業日以内にメールでご連絡します。'}
+                {status === 'error' && '送信できませんでした。時間をおいてもう一度お試しください。'}
+            </p>
         </form>
     );
 }

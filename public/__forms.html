@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="utf-8"><title>forms</title></head>
+<body>
+<!-- Netlify Forms の受け口（画面には出ません）。項目はトップのお問い合わせフォームと合わせる -->
+<form name="contact-form" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="contact-form">
+  <input name="bot-field">
+  <input type="text" name="name">
+  <input type="text" name="company">
+  <input type="email" name="email">
+  <select name="topic"><option value="">-</option></select>
+  <textarea name="message"></textarea>
+  <input type="checkbox" name="privacy">
+</form>
+</body>
+</html>
