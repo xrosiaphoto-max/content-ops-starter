@@ -1,0 +1,65 @@
+# ============================================================
+#  SNS自動化 設定ファイル
+#  秘密情報（トークン・キー）はここに書かず、環境変数 / GitHub Secrets に入れてください。
+# ============================================================
+
+account:
+  brand_name: "XROSIA PHOTO"        # キャプション末尾などに入る名前
+  timezone: "Asia/Tokyo"
+
+# ---------- ① リール自動生成 ----------
+reel:
+  width: 1080
+  height: 1920                       # 9:16（Instagramリール / X 共通で使える）
+  fps: 30
+  seconds_per_image: 2.5             # 1枚あたりの表示秒数
+  transition_seconds: 0.5            # クロスフェードの長さ
+  zoom: 1.08                         # ゆっくり寄るズーム量（1.0でズームなし）
+  background: "#FFFFFF"              # 影飛ばし白背景に合わせる
+  max_images: 12                     # 1本に使う最大枚数
+  bgm_dir: "assets/bgm"              # mp3/m4a を入れるとランダムに使用（無ければ無音）
+  bgm_volume: 0.8
+  # テロップ（meta.yaml の overlay_text があれば表示）
+  font_path: "assets/fonts/NotoSansJP-Bold.ttf"
+  overlay_seconds: 3.0               # 冒頭何秒テロップを出すか
+  overlay_font_size: 64
+
+# ---------- キャプション ----------
+caption:
+  instagram_template: |
+    {title}
+
+    {body}
+
+    📷 {brand_name}
+    {hashtags}
+  x_template: "{title}\n{body_short}\n{hashtags_short}"
+  default_hashtags:
+    - "#商品撮影"
+    - "#物撮り"
+    - "#ブツ撮り"
+    - "#productphotography"
+    - "#stilllife"
+    - "#フォトグラファー"
+  x_max_hashtags: 3                  # X は付けすぎると逆効果なので少なめ
+
+# ---------- ストレージ（Instagram は動画の公開URLが必須） ----------
+# Cloudflare R2 / AWS S3 など S3 互換ストレージ。キーは環境変数で渡す。
+storage:
+  bucket_env: "S3_BUCKET"
+  endpoint_env: "S3_ENDPOINT_URL"    # R2: https://<accountid>.r2.cloudflarestorage.com
+  public_base_url_env: "S3_PUBLIC_BASE_URL"  # 例: https://media.example.com
+  prefix: "reels/"
+
+# ---------- ② 自動投稿 ----------
+posting:
+  queue_file: "queue.yaml"
+  posts_per_run: 1                   # 1回の実行で投稿する本数（毎日1本）
+  instagram:
+    enabled: true
+    api_base: "https://graph.instagram.com"
+    api_version: "v23.0"
+    share_to_feed: true              # リールをフィードにも表示
+  x:
+    enabled: true
+    api_base: "https://api.x.com"

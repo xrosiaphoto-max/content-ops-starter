@@ -1,0 +1,10 @@
+output/
+inbox/*
+!inbox/.gitkeep
+assets/bgm/*
+!assets/bgm/.gitkeep
+assets/fonts/*
+!assets/fonts/.gitkeep
+.env
+__pycache__/
+*.pyc
